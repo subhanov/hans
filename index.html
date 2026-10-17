@@ -20,6 +20,86 @@
 <html>
 <head>
 	<title>INI SUBHANOV BROW</title>
+	<style>
+    	* {
+        	box-sizing: border-box;
+    	}
+		body {
+        	margin: 0;
+        	padding: 40px;
+        	font-family: Arial, sans-serif;
+        	background: #e8edf3;
+    	}
+		h2 {
+        	text-align: center;
+        	color: #24364b;
+        	margin-bottom: 45px;
+    	}
+		/* Tata letak 4 kolom x 3 baris */
+    	.menu-container {
+        	display: grid;
+        	grid-template-columns: repeat(4, 1fr);
+        	gap: 45px;
+        	max-width: 1400px;
+        	margin: auto;
+    	}
+		/* Tombol 3 dimensi */
+    	.tombol {
+        	min-height: 100px;
+        	padding: 18px 12px;
+			display: flex;
+        	align-items: center;
+        	justify-content: center;
+        	text-align: center;
+			background: linear-gradient (180deg, #ffffff 0%, #dce5ef 45%, #b8c8da 100%);
+			color: #20364f;
+        	font-size: 16px;
+        	font-weight: bold;
+        	text-decoration: none;
+			border: 1px solid #9aadc2;
+        	border-radius: 10px;
+			/* Efek tombol timbul */
+        	box-shadow:
+        	0 7px 0 #71869c,
+            0 10px 14px rgba(0, 0, 0, 0.20);
+			cursor: pointer;
+        	transition: all 0.12s ease;
+    	}
+		/* Efek saat mouse diarahkan */
+    	.tombol:hover {
+        	background: linear-gradient(180deg, #ffffff, #c9e5ff);
+        	transform: translateY(-2px);
+			box-shadow:
+            0 9px 0 #527da4,
+            0 13px 18px rgba(0, 0, 0, 0.22);
+    	}
+		/* Efek saat tombol ditekan */
+    	.tombol:active {
+        	transform: translateY(6px);
+			box-shadow:
+            0 1px 0 #71869c,
+            0 3px 5px rgba(0, 0, 0, 0.15);
+    	}
+		/* Responsif untuk layar kecil */
+    	@media (max-width: 900px) {
+        	body {
+            	padding: 25px;
+        	}
+			.menu-container {
+            	grid-template-columns: repeat(2, 1fr);
+            	gap: 30px;
+        	}
+    	}
+		@media (max-width: 480px) {
+        	body {
+            	padding: 18px;
+        	}
+			.menu-container {
+            	grid-template-columns: 1fr;
+            	gap: 25px;
+        	}
+    	}
+</style>
 </head>
 <body>
 <center>
