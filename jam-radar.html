@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<!--
+																				
+																				
+										**==================================================================================================**
+										**										PROGRAMMING BY												**
+										**																									**
+										**	 //////		//	  //	///////		//	  //	 //////		//	   //	 ///////	//		//	**
+										**	//			//	  //	//    //	//	  //	//	  //	///    //	//	   // 	//	    //	**
+										**	//			//	  //	//    //	//	  //	//	  //	// //  //	//	   //	//		//	**
+										**	//////		//	  //	///////		////////	//	  //	//  // //	//	   //	 //	   //	**
+										**		 //		//	  //	//	  //	//	  //	////////	//   ////	//	   //	 //	   //	**
+										**		 //		//	  //	//    //	//	  //	//	  //	//	   //	//	   //	  //  //	**
+										**	//////		 //////		///////		//	  //	//	  //	//	   //	 ///////		//		**
+										**																									**
+										**											Version 1.0												**
+										**																									**
+										**==================================================================================================**
+-->
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RETRO CRT RADAR CLOCK</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family:
+        "Courier New",
+        "Lucida Console",
+        monospace;
+
+    color: #39ff14;
+}
+
+/* =========================================================
+   MONITOR
+   ========================================================= */
+
+.monitor {
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #061506 0%,
+            #020802 42%,
+            #000000 80%
+        );
+
+    box-shadow:
+        inset 0 0 150px #000,
+        inset 0 0 60px rgba(0,255,0,.08);
+}
+
+/* CRT scanlines */
+
+.monitor::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    z-index: 100;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,.035) 0px,
+            rgba(255,255,255,.035) 1px,
+            rgba(0,0,0,.18) 2px,
+            rgba(0,0,0,.18) 4px
+        );
+
+    opacity: .7;
+}
+
+/* CRT vignette */
+
+.monitor::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    z-index: 101;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 45%,
+            rgba(0,0,0,.45) 100%
+        );
+}
+
+
+/* =========================================================
+   TOP INFORMATION PANEL
+   ========================================================= */
+
+.top-panel {
+    position: absolute;
+
+    top: 2.5vh;
+
+    width: 80vw;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: #39ff14;
+
+    font-size: clamp(9px, 1.2vw, 17px);
+
+    letter-spacing: 3px;
+
+    text-shadow:
+        0 0 5px #39ff14,
+        0 0 15px #00ff00;
+
+    opacity: .9;
+}
+
+.status {
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 45% {
+        opacity: 1;
+    }
+
+    50%, 55% {
+        opacity: .25;
+    }
+
+    60%, 100% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+.clock {
+    position: relative;
+
+    width: min(80vh, 80vw);
+    height: min(80vh, 80vw);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #020702 0%,
+            #000900 55%,
+            #000000 100%
+        );
+
+    border: 8px solid #39ff14;
+
+    box-shadow:
+
+        0 0 5px #39ff14,
+        0 0 15px #39ff14,
+        0 0 30px #00ff00,
+        0 0 60px rgba(0,255,0,.8),
+
+        inset 0 0 15px #39ff14,
+        inset 0 0 40px rgba(0,255,0,.4),
+        inset 0 0 100px rgba(0,255,0,.12);
+
+    filter: saturate(1.4);
+}
+
+
+/* =========================================================
+   RADAR CIRCLES
+   ========================================================= */
+
+.radar-ring {
+    position: absolute;
+
+    border-radius: 50%;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    pointer-events: none;
+
+    border: 1px solid rgba(57,255,20,.45);
+
+    box-shadow:
+        0 0 7px rgba(57,255,20,.3);
+}
+
+.ring1 {
+    width: 85%;
+    height: 85%;
+}
+
+.ring2 {
+    width: 65%;
+    height: 65%;
+}
+
+.ring3 {
+    width: 45%;
+    height: 45%;
+}
+
+.ring4 {
+    width: 25%;
+    height: 25%;
+}
+
+
+/* =========================================================
+   CROSSHAIR
+   ========================================================= */
+
+.cross-horizontal,
+.cross-vertical {
+    position: absolute;
+
+    background: rgba(57,255,20,.18);
+
+    pointer-events: none;
+}
+
+.cross-horizontal {
+    width: 100%;
+    height: 1px;
+
+    top: 50%;
+    left: 0;
+}
+
+.cross-vertical {
+    width: 1px;
+    height: 100%;
+
+    left: 50%;
+    top: 0;
+}
+
+
+/* =========================================================
+   60 MINUTE TICKS
+   ========================================================= */
+
+.ticks {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+}
+
+.tick {
+    position: absolute;
+
+    left: 50%;
+    top: 2.5%;
+
+    width: 2px;
+    height: 8px;
+
+    transform-origin:
+        50%
+        calc(47.5%);
+
+    background: #39ff14;
+
+    box-shadow:
+        0 0 4px #39ff14,
+        0 0 9px #00ff00;
+}
+
+.tick.major {
+    width: 4px;
+    height: 18px;
+
+    background: #baffaa;
+
+    box-shadow:
+        0 0 5px #39ff14,
+        0 0 14px #00ff00;
+}
+
+
+/* =========================================================
+   NUMBERS
+   ========================================================= */
+
+.number {
+    position: absolute;
+
+    color: #66ff44;
+
+    font-size: clamp(
+        18px,
+        4vh,
+        45px
+    );
+
+    font-weight: bold;
+
+    transform:
+        translate(-50%, -50%);
+
+    text-shadow:
+        0 0 5px #39ff14,
+        0 0 12px #00ff00,
+        0 0 25px #00ff00;
+
+    z-index: 5;
+}
+
+.n12 {
+    top: 8%;
+    left: 50%;
+}
+
+.n1 {
+    top: 13%;
+    left: 71%;
+}
+
+.n2 {
+    top: 28%;
+    left: 86%;
+}
+
+.n3 {
+    top: 50%;
+    left: 92%;
+}
+
+.n4 {
+    top: 72%;
+    left: 86%;
+}
+
+.n5 {
+    top: 87%;
+    left: 71%;
+}
+
+.n6 {
+    top: 92%;
+    left: 50%;
+}
+
+.n7 {
+    top: 87%;
+    left: 29%;
+}
+
+.n8 {
+    top: 72%;
+    left: 14%;
+}
+
+.n9 {
+    top: 50%;
+    left: 8%;
+}
+
+.n10 {
+    top: 28%;
+    left: 14%;
+}
+
+.n11 {
+    top: 13%;
+    left: 29%;
+}
+
+
+/* =========================================================
+   CLOCK HANDS
+   ========================================================= */
+
+.hand {
+    position: absolute;
+
+    left: 50%;
+    bottom: 50%;
+
+    transform-origin: 50% 100%;
+
+    border-radius: 20px;
+
+    z-index: 20;
+}
+
+
+/* HOUR - RED */
+
+.hour {
+    width: 22px;
+    height: 28%;
+
+    background: #ff1515;
+
+    box-shadow:
+        0 0 5px #ff0000,
+        0 0 15px #ff0000,
+        0 0 30px #ff0000,
+        0 0 50px rgba(255,0,0,.8);
+}
+
+
+/* MINUTE - YELLOW */
+
+.minute {
+    width: 13px;
+    height: 39%;
+
+    background: #fff900;
+
+    box-shadow:
+        0 0 5px #ffff00,
+        0 0 15px #ffff00,
+        0 0 30px #ffff00,
+        0 0 45px rgba(255,255,0,.7);
+}
+
+
+/* SECOND - BLUE */
+
+.second {
+    width: 4px;
+    height: 44%;
+
+    background: #009dff;
+
+    box-shadow:
+        0 0 5px #008cff,
+        0 0 15px #008cff,
+        0 0 30px #008cff,
+        0 0 45px rgba(0,140,255,.8);
+}
+
+
+/* =========================================================
+   CENTER
+   ========================================================= */
+
+.center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 32px;
+    height: 32px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #eaffea;
+
+    border: 3px solid #39ff14;
+
+    z-index: 30;
+
+    box-shadow:
+        0 0 8px #ffffff,
+        0 0 20px #39ff14,
+        0 0 40px #00ff00;
+}
+
+
+/* =========================================================
+   RADAR SWEEP
+   ========================================================= */
+
+.sweep {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 50%;
+    height: 2px;
+
+    transform-origin: 0 50%;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(57,255,20,.9),
+            rgba(57,255,20,.15),
+            transparent
+        );
+
+    box-shadow:
+        0 0 10px #39ff14,
+        0 0 25px #00ff00;
+
+    animation:
+        sweep 4s linear infinite;
+
+    opacity: .25;
+
+    z-index: 3;
+}
+
+@keyframes sweep {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   DIGITAL DISPLAY
+   ========================================================= */
+
+.digital-panel {
+
+    margin-top: 18px;
+
+    padding: 7px 25px;
+
+    min-width: 430px;
+
+    text-align: center;
+
+    border-top: 1px solid rgba(57,255,20,.6);
+    border-bottom: 1px solid rgba(57,255,20,.6);
+
+    background:
+        rgba(0,15,0,.7);
+
+    box-shadow:
+        0 0 10px rgba(0,255,0,.15),
+        inset 0 0 15px rgba(0,255,0,.08);
+}
+
+.digital {
+
+    color: #ffffff;
+
+    font-size: clamp(
+        22px,
+        4vh,
+        52px
+    );
+
+    font-weight: bold;
+
+    letter-spacing: 5px;
+
+    text-shadow:
+        0 0 5px #ffffff,
+        0 0 12px #ffffff,
+        0 0 25px #00ffff,
+        0 0 45px #00ffff;
+}
+
+
+/* =========================================================
+   BOTTOM STATUS
+   ========================================================= */
+
+.bottom-panel {
+
+    margin-top: 7px;
+
+    color: #39ff14;
+
+    font-size: clamp(
+        8px,
+        1.1vw,
+        14px
+    );
+
+    letter-spacing: 4px;
+
+    text-shadow:
+        0 0 5px #00ff00,
+        0 0 12px #00ff00;
+
+    opacity: .75;
+}
+
+
+/* =========================================================
+   CRT FLICKER
+   ========================================================= */
+
+.crt-flicker {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        rgba(0,255,0,.015);
+
+    animation:
+        flicker .12s infinite;
+}
+
+@keyframes flicker {
+
+    0% {
+        opacity: .8;
+    }
+
+    50% {
+        opacity: .95;
+    }
+
+    100% {
+        opacity: .82;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:600px) {
+
+    .clock {
+
+        width: 78vw;
+        height: 78vw;
+
+        border-width: 6px;
+    }
+
+    .hour {
+        width: 15px;
+    }
+
+    .minute {
+        width: 9px;
+    }
+
+    .second {
+        width: 3px;
+    }
+
+    .digital-panel {
+
+        min-width: 0;
+        width: 85vw;
+
+        padding: 6px;
+    }
+
+    .digital {
+
+        font-size: 6vw;
+
+        letter-spacing: 2px;
+    }
+
+    .top-panel {
+
+        width: 90vw;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="monitor">
+
+    <!-- TOP STATUS -->
+
+    <div class="top-panel">
+
+        <div>
+            SYSTEM // TIME CONTROL
+        </div>
+
+        <div class="status">
+            ● ONLINE
+        </div>
+
+    </div>
+
+
+    <!-- CLOCK -->
+
+    <div class="clock">
+
+        <!-- RADAR RINGS -->
+
+        <div class="radar-ring ring1"></div>
+        <div class="radar-ring ring2"></div>
+        <div class="radar-ring ring3"></div>
+        <div class="radar-ring ring4"></div>
+
+        <!-- CROSSHAIR -->
+
+        <div class="cross-horizontal"></div>
+        <div class="cross-vertical"></div>
+
+        <!-- RADAR SWEEP -->
+
+        <div class="sweep"></div>
+
+        <!-- 60 TICKS -->
+
+        <div class="ticks" id="ticks"></div>
+
+
+        <!-- NUMBERS -->
+
+        <div class="number n12">12</div>
+        <div class="number n1">1</div>
+        <div class="number n2">2</div>
+        <div class="number n3">3</div>
+        <div class="number n4">4</div>
+        <div class="number n5">5</div>
+        <div class="number n6">6</div>
+        <div class="number n7">7</div>
+        <div class="number n8">8</div>
+        <div class="number n9">9</div>
+        <div class="number n10">10</div>
+        <div class="number n11">11</div>
+
+
+        <!-- HANDS -->
+
+        <div
+            class="hand hour"
+            id="hourHand">
+        </div>
+
+        <div
+            class="hand minute"
+            id="minuteHand">
+        </div>
+
+        <div
+            class="hand second"
+            id="secondHand">
+        </div>
+
+
+        <!-- CENTER -->
+
+        <div class="center"></div>
+
+    </div>
+
+
+    <!-- DIGITAL TIME -->
+
+    <div class="digital-panel">
+
+        <div
+            class="digital"
+            id="digitalClock">
+            00:00:00.000
+        </div>
+
+    </div>
+
+
+    <!-- BOTTOM -->
+
+    <div class="bottom-panel">
+
+        SUBHANOV CRT TERMINAL // PRECISION CLOCK
+        // 1000 Hz DISPLAY
+
+    </div>
+
+
+    <!-- FLICKER -->
+
+    <div class="crt-flicker"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MEMBUAT 60 GARIS MENIT
+   ========================================================= */
+
+const ticksContainer =
+    document.getElementById("ticks");
+
+for (let i = 0; i < 60; i++) {
+
+    const tick =
+        document.createElement("div");
+
+    tick.classList.add("tick");
+
+    if (i % 5 === 0) {
+        tick.classList.add("major");
+    }
+
+    tick.style.transform =
+        `rotate(${i * 6}deg)`;
+
+    ticksContainer.appendChild(tick);
+}
+
+
+/* =========================================================
+   JAM REAL-TIME
+   ========================================================= */
+
+function updateClock() {
+
+    const now = new Date();
+
+    const hours =
+        now.getHours();
+
+    const minutes =
+        now.getMinutes();
+
+    const seconds =
+        now.getSeconds();
+
+    const milliseconds =
+        now.getMilliseconds();
+
+
+    /*
+       Jarum detik
+
+       60 detik = 360°
+       1 detik = 6°
+    */
+
+    const secondAngle =
+        (seconds +
+        milliseconds / 1000) * 6;
+
+
+    /*
+       Jarum menit
+    */
+
+    const minuteAngle =
+        (
+            minutes +
+            seconds / 60 +
+            milliseconds / 60000
+        ) * 6;
+
+
+    /*
+       Jarum jam
+
+       12 jam = 360°
+    */
+
+    const hourAngle =
+        (
+            (hours % 12) +
+            minutes / 60 +
+            seconds / 3600
+        ) * 30;
+
+
+    /*
+       Terapkan rotasi
+    */
+
+    document
+        .getElementById("secondHand")
+        .style.transform =
+        `translateX(-50%)
+         rotate(${secondAngle}deg)`;
+
+
+    document
+        .getElementById("minuteHand")
+        .style.transform =
+        `translateX(-50%)
+         rotate(${minuteAngle}deg)`;
+
+
+    document
+        .getElementById("hourHand")
+        .style.transform =
+        `translateX(-50%)
+         rotate(${hourAngle}deg)`;
+
+
+    /*
+       Format digital
+
+       HH:MM:SS.mmm
+    */
+
+    const hh =
+        String(hours)
+        .padStart(2, "0");
+
+    const mm =
+        String(minutes)
+        .padStart(2, "0");
+
+    const ss =
+        String(seconds)
+        .padStart(2, "0");
+
+    const ms =
+        String(milliseconds)
+        .padStart(3, "0");
+
+
+    document
+        .getElementById("digitalClock")
+        .textContent =
+        `${hh}:${mm}:${ss}.${ms}`;
+
+
+    /*
+       Update secepat mungkin
+    */
+
+    requestAnimationFrame(
+        updateClock
+    );
+}
+
+
+/* MULAI */
+
+updateClock();
+
+</script>
+
+</body>
+</html>
