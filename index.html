@@ -19,6 +19,8 @@
 -->
 <html>
 <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>INI SUBHANOV BROW</title>
 	<style>
     	* {
@@ -106,7 +108,14 @@
             	gap: 25px;
         	}
     	}
-</style>
+	</style>
+	<script>
+		const judul="SILAKAN SCAN QRIS DI LAYAR BILA INGIN BERDONASI ATAU MEMBAYAR (by Hans)";
+		let posisi = 0;
+		setInterval(() => {document.title = judul.substring(posisi) + "    " + judul.substring(0, posisi);
+							posisi = (posisi + 1) % judul.length;
+						  }, 250);
+	</script>
 </head>
 <body bgcolor="blue">
 <center>
